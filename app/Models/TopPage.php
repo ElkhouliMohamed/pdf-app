@@ -18,12 +18,13 @@ class TopPage extends Model
     // Fillable fields for mass assignment
     protected $fillable = [
         'url_page',
-        'nb_clicks',
+        'nombre_visites',  // Change nb_clicks to nombre_visites
         'nb_impressions',
         'avg_ctr',
         'avg_position',
         'id_rapport',
     ];
+
 
     // Define relationship with Rapport (Each TopPage belongs to a Rapport)
     public function rapport()

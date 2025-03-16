@@ -9,20 +9,23 @@ class TopSessionPage extends Model
 {
     use HasFactory;
 
-    // Table name
+    // Specify the table name (optional if it's following the Laravel naming convention)
     protected $table = 'top_session_pages';
 
-    // Primary key
+    // Specify the primary key if it's not 'id' (optional)
     protected $primaryKey = 'id_session_page';
 
-    // Fillable fields for mass assignment
+    // Enable timestamps (optional, depends on whether the table has created_at and updated_at columns)
+    public $timestamps = true;
+
+    // Define the fillable fields
     protected $fillable = [
         'url_page',
         'duree_moyenne',
         'id_rapport',
     ];
 
-    // Define relationship with Rapport
+    // Define relationships if any (if 'id_rapport' is related to the Rapport model)
     public function rapport()
     {
         return $this->belongsTo(Rapport::class, 'id_rapport', 'id_rapport');

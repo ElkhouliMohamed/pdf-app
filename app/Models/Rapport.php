@@ -36,17 +36,32 @@ class Rapport extends Model
         'nb_orders',
         'nb_cart',
     ];
+    protected $guarded = [];
+    protected $dates = ['periode', 'created_at', 'updated_at'];
 
-    // Define relationship with Projet
+    // Relationship with Projet
     public function projet()
     {
-        return $this->belongsTo(Projet::class, 'id_projet', 'id_projet');
+        return $this->belongsTo(Projet::class, 'id_projet');
     }
 
-    // Define relationship with TopSessionPage (One to Many)
+    // Relationship with TopKeyword
+   
+
+    // Relationship with TopPage
+    public function topPages()
+    {
+        return $this->hasMany(TopPage::class, 'id_rapport');
+    }
+
+    // Relationship with TopSessionPage
     public function topSessionPages()
     {
-        return $this->hasMany(TopSessionPage::class, 'id_rapport', 'id_rapport');
+        return $this->hasMany(TopSessionPage::class, 'id_rapport');
+    }
+    public function topKeywords()
+    {
+        return $this->hasMany(TopKeyword::class, 'id_rapport'); // Adjust the relation according to your schema
     }
 
     // Casting the 'periode' field as a datetime (Carbon instance)

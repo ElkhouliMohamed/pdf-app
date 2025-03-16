@@ -9,23 +9,26 @@ class TopKeyword extends Model
 {
     use HasFactory;
 
-    // Table name (if not default, you can specify)
+    // Specify the table name (if it's not following Laravel's naming conventions)
     protected $table = 'top_keywords';
 
-    // Primary key (optional if 'id' is used)
+    // Specify the primary key (optional, Laravel assumes 'id' by default)
     protected $primaryKey = 'id_keyword';
 
-    // Fillable fields for mass assignment
+    // If the table uses timestamps (created_at and updated_at)
+    public $timestamps = true;
+
+    // Define which attributes can be mass-assigned
     protected $fillable = [
         'keyword',
-        'nb_clicks',
-        'nb_impressions',
-        'avg_ctr',
-        'avg_position',
+        'nombre_requetes',
         'id_rapport',
     ];
 
-    // Define relationship with Rapport (Each TopKeyword belongs to a Rapport)
+    // If you want to specify a custom date format for timestamps (optional)
+    protected $dateFormat = 'Y-m-d H:i:s';
+
+    // Define the relationship with Rapport (assuming 'rapport' and 'projet' relationships exist in the Rapport model)
     public function rapport()
     {
         return $this->belongsTo(Rapport::class, 'id_rapport', 'id_rapport');

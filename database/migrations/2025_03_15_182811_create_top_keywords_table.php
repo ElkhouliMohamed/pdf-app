@@ -12,14 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('top_keywords', function (Blueprint $table) {
-            $table->id('id_keyword');
-            $table->string('keyword');
-            $table->integer('nombre_requetes');
-            $table->timestamps();
+            $table->id('id_keyword'); // Create an auto-incrementing ID as primary key
+            $table->string('keyword'); // Store the keyword
+            $table->integer('nombre_requetes'); // Store the number of requests
 
             // Foreign key to the `rapports` table
-            $table->unsignedBigInteger('id_rapport');
-            $table->foreign('id_rapport')->references('id_rapport')->on('rapports')->onDelete('cascade');
+            $table->unsignedBigInteger('id_rapport'); // Unsigned big integer for foreign key
+            $table->foreign('id_rapport')->references('id_rapport')->on('rapports')->onDelete('cascade'); // Foreign key constraint
+
+            $table->timestamps(); // Created at and updated at
         });
     }
 

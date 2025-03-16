@@ -2,46 +2,48 @@
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 @section('content')
-    <div class="max-w-7xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-10">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Liste des Rapports</h1>
+    <div class="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-10">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Pages de Session les Plus Visitées</h1>
 
-        <!-- Table Container -->
+        @if (session('success'))
+            <div class="bg-green-500 text-white p-4 rounded-lg shadow-md mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <!-- Add New Button -->
+        <a href="{{ route('topSessionPages.create') }}"
+            class="inline-flex items-center bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mb-6 transition-colors">
+            <i class="fas fa-plus mr-2"></i> Ajouter une Nouvelle Page de Session
+        </a>
+
         <div class="overflow-x-auto shadow-lg rounded-lg">
             <table class="min-w-full bg-white border border-gray-200">
                 <thead class="bg-gradient-to-r from-gray-800 to-gray-700 text-white">
                     <tr>
-                        <th class="px-6 py-4 text-left text-lg font-semibold">Projet</th>
-                        <th class="px-6 py-4 text-left text-lg font-semibold">Nom du Rapport</th>
-                        <th class="px-6 py-4 text-left text-lg font-semibold">Période</th>
+                        <th class="px-6 py-4 text-left text-lg font-semibold">URL de la Page</th>
+                        <th class="px-6 py-4 text-left text-lg font-semibold">Durée Moyenne</th>
+                        <th class="px-6 py-4 text-left text-lg font-semibold">Rapport</th>
                         <th class="px-6 py-4 text-left text-lg font-semibold">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($rapports as $rapport)
-                        <tr class="border-b hover:bg-gray-100 transition-colors duration-200">
-                            <td class="px-6 py-4 text-gray-800 text-lg">{{ $rapport->projet->nom_projet }}</td>
-                            <td class="px-6 py-4 text-gray-800 text-lg">{{ $rapport->nom_rapport }}</td>
-                            <td class="px-6 py-4 text-gray-800 text-lg">{{ $rapport->periode->format('F Y') }}</td>
+                    @forelse ($topSessionPages as $sessionPage)
+                        <tr class="border-b hover:bg-gray-100 transition-colors">
+                            <td class="px-6 py-4 text-gray-800 text-lg">{{ $sessionPage->url_page }}</td>
+                            <td class="px-6 py-4 text-gray-800 text-lg">{{ $sessionPage->duree_moyenne }}</td>
+                            <td class="px-6 py-4 text-gray-800 text-lg">{{ $sessionPage->rapport->nom_rapport ?? 'N/A' }}
+                            </td>
                             <td class="px-6 py-4 flex space-x-4">
-                                <!-- View Action -->
-                                <a href="{{ route('rapports.show', $rapport->id_rapport) }}"
-                                    class="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
-                                    <i class="fas fa-eye mr-1"></i> Voir
-                                </a>
-                                <a href="{{ route('chart-data.show', $rapport->id_rapport) }}"
-                                    class="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
-                                    <i class="fas fa-chart-line mr-1"></i> Graphique
-                                </a>
-
                                 <!-- Edit Action -->
-                                <a href="{{ route('rapports.edit', $rapport->id_rapport) }}"
+                                <a href="{{ route('topSessionPages.edit', $sessionPage->id_session_page) }}"
                                     class="flex items-center text-yellow-600 hover:text-yellow-800 transition-colors">
                                     <i class="fas fa-edit mr-1"></i> Modifier
                                 </a>
 
                                 <!-- Delete Action with SweetAlert -->
-                                <form action="{{ route('rapports.destroy', $rapport->id_rapport) }}" method="POST"
-                                    class="inline delete-form" data-id="{{ $rapport->id_rapport }}">
+                                <form action="{{ route('topSessionPages.destroy', $sessionPage->id_session_page) }}"
+                                    method="POST" class="inline delete-form" data-id="{{ $sessionPage->id_session_page }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="button"
@@ -54,7 +56,7 @@
                     @empty
                         <tr>
                             <td colspan="4" class="px-6 py-4 text-center text-gray-500 text-lg">
-                                Aucun rapport trouvé.
+                                Aucune page de session trouvée.
                             </td>
                         </tr>
                     @endforelse
@@ -63,7 +65,7 @@
         </div>
     </div>
 
-    <!-- Include SweetAlert2 CDN -->
+    <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- SweetAlert2 Script -->
@@ -91,7 +93,7 @@
                             form.submit();
                             Swal.fire(
                                 'Supprimé !',
-                                'Le rapport a été supprimé.',
+                                'La page de session a été supprimée.',
                                 'success'
                             );
                         }
@@ -101,3 +103,4 @@
         });
     </script>
 @endsection
+    

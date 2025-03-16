@@ -26,6 +26,11 @@ class Projet extends Model
     // Define relationships with other models
     public function rapports()
     {
-        return $this->hasMany(Rapport::class, 'id_projet', 'id_projet');
+        return $this->hasMany(Rapport::class, 'id_projet');
+    }
+    // Define relationships with other models
+    public function projet()
+    {
+        return $this->belongsTo(Projet::class, 'id_projet', 'id_projet');
     }
 }
