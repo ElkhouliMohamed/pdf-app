@@ -46,7 +46,7 @@ class Rapport extends Model
     }
 
     // Relationship with TopKeyword
-   
+
 
     // Relationship with TopPage
     public function topPages()
@@ -62,6 +62,10 @@ class Rapport extends Model
     public function topKeywords()
     {
         return $this->hasMany(TopKeyword::class, 'id_rapport'); // Adjust the relation according to your schema
+    }
+    public function erreurs404()
+    {
+        return $this->hasMany(Erreur404::class, 'id_rapport');
     }
 
     // Casting the 'periode' field as a datetime (Carbon instance)

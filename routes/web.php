@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\Erreur404Controller;
 use App\Http\Controllers\ProjetController;
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\TopKeywordController;
@@ -16,6 +17,13 @@ Route::middleware('auth')->group(function () {
     Route::resource("/topKeywords", TopKeywordController::class);
     Route::resource('topSessionPages', TopSessionPageController::class);
     Route::resource('topPages', TopPageController::class);
+    Route::resource('erreurs404', Erreur404Controller::class);
+
+
+
+    Route::get('/erreurs404', [Erreur404Controller::class, 'index'])->name('erreurs404.index');
+    Route::get('/erreurs404/create', [Erreur404Controller::class, 'create'])->name('erreurs404.create');
+    Route::post('/erreurs404', [Erreur404Controller::class, 'store'])->name('erreurs404.store');
 
     Route::get('/', [ProjetController::class, 'index'])->name('index');
     Route::get('/projets', [ProjetController::class, 'index'])->name('projets.index');

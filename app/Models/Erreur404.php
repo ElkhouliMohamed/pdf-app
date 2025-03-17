@@ -2,22 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Erreur404 extends Model
 {
-    use HasFactory;
-
-    // Table name
     protected $table = 'erreurs_404';
+    protected $primaryKey = 'id_404';
+    public $timestamps = true;
 
-    // Primary key
-    protected $primaryKey = 'id_erreur_404';
-
-    // Fillable fields for mass assignment
     protected $fillable = [
-        'url',
-        'timestamp',
+        'nb_404',
+        'file_data',
+        'id_rapport'
     ];
+
+    // Relationship with Rapport
+    public function rapport()
+    {
+        return $this->belongsTo(Rapport::class, 'id_rapport');
+    }
 }

@@ -1,3 +1,4 @@
+<!-- resources/views/layouts/app.blade.php (or wherever your nav is) -->
 <nav class="bg-gray-900 shadow-md p-4 text-xl">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
@@ -19,7 +20,7 @@
                         <i class="fas fa-project-diagram mr-2"></i>Projets
                     </button>
                     <div
-                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 hidden group-hover:block">
+                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                         <a href="{{ route('projets.index') }}"
                             class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
                             <i class="fas fa-home mr-2"></i>Accueil
@@ -38,7 +39,7 @@
                         <i class="fas fa-file-alt mr-2"></i>Rapports
                     </button>
                     <div
-                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 hidden group-hover:block">
+                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                         <a href="{{ route('rapports.index') }}"
                             class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
                             <i class="fas fa-file mr-2"></i>Rapports
@@ -57,7 +58,7 @@
                         <i class="fas fa-key mr-2"></i>Top Keyword
                     </button>
                     <div
-                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 hidden group-hover:block">
+                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                         <a href="{{ route('topKeywords.index') }}"
                             class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
                             <i class="fas fa-file mr-2"></i>Top Keyword
@@ -76,7 +77,7 @@
                         <i class="fas fa-list-alt mr-2"></i>Top Session Pages
                     </button>
                     <div
-                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 hidden group-hover:block">
+                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                         <a href="{{ route('topSessionPages.index') }}"
                             class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
                             <i class="fas fa-file mr-2"></i>Top Session Pages
@@ -95,7 +96,7 @@
                         <i class="fas fa-pager mr-2"></i>Top Pages
                     </button>
                     <div
-                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 hidden group-hover:block">
+                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                         <a href="{{ route('topPages.index') }}"
                             class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
                             <i class="fas fa-file mr-2"></i>Top Pages
@@ -106,14 +107,34 @@
                         </a>
                     </div>
                 </div>
-                {{-- logout / .... --}}
-                <div class="relative group text-sm ">
+
+                <!-- Erreurs 404 Dropdown -->
+                <div class="relative group">
                     <button
                         class="text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded-md text-sm font-medium flex items-center">
-                        <i class="fa-solid fa-gear"></i> <!-- Gear Icon -->
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Erreurs 404
                     </button>
                     <div
-                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 hidden group-hover:block ease-in-out duration-300 ">
+                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
+                        <a href="{{ route('erreurs404.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
+                            <i class="fas fa-file mr-2"></i>Liste Erreurs 404
+                        </a>
+                        <a href="{{ route('erreurs404.create') }}"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white">
+                            <i class="fas fa-plus mr-2"></i>Ajouter Erreur 404
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Logout/Settings -->
+                <div class="relative group text-sm">
+                    <button
+                        class="text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded-md text-sm font-medium flex items-center">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <div
+                        class="dropdown-content absolute left-0 bg-gray-800 shadow-lg rounded-md w-40 mt-1 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit"
@@ -123,9 +144,6 @@
                         </form>
                     </div>
                 </div>
-
-
-
             </div>
 
             <!-- Mobile Menu Button -->
@@ -176,6 +194,14 @@
         <a href="{{ route('topPages.create') }}"
             class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
             <i class="fas fa-plus mr-2"></i>Créer une Top Page
+        </a>
+        <a href="{{ route('erreurs404.index') }}"
+            class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
+            <i class="fas fa-exclamation-triangle mr-2"></i>Erreurs 404
+        </a>
+        <a href="{{ route('erreurs404.create') }}"
+            class="block px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
+            <i class="fas fa-plus mr-2"></i>Ajouter Erreur 404
         </a>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
