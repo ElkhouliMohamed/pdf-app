@@ -1,47 +1,89 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ __('Login') }}</title>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <!-- CSRF Token for Laravel -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Template CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/iofrm-style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/iofrm-theme6.css') }}">
+</head>
+
+<body>
+    <div class="form-body">
+        <div class="website-logo">
+            <a href="{{ route('index') }}">
+                <div class="logo">
+                    <img class="logo-size" src="{{ asset('images/logo-light.jpg') }}" alt="Logo">
+                </div>
+            </a>
         </div>
+        <div class="iofrm-layout">
+            <div class="img-holder">
+                <div class="bg"></div>
+                <div class="info-holder">
+                    <img src="{{ asset('images/graphic2.svg') }}" alt="Graphic">
+                </div>
+            </div>
+            <div class="form-holder">
+                <div class="form-content">
+                    <div class="form-items">
+                        <h3>{{ __('Get more things done with Loggin platform.') }}</h3>
+                        <p>{{ __('Access to the most powerful tool in the entire design and web industry.') }}</p>
+                        <div class="page-links">
+                            <a href="{{ route('login') }}" class="active">{{ __('Login') }}</a>
+                            <a href="{{ route('register') }}">{{ __('Register') }}</a>
+                        </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+                        <!-- Session Status -->
+                        @if (session('status'))
+                            <div class="alert alert-success" style="margin-bottom: 20px;">
+                                {{ session('status') }}
+                            </div>
+                        @endif
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+                        <!-- Login Form -->
+                        <form method="POST" action="{{ route('login') }}">
+                            @csrf
+                            <input class="form-control" type="email" name="email"
+                                placeholder="{{ __('E-mail Address') }}" value="{{ old('email') }}" required
+                                autofocus autocomplete="username">
+                            @if ($errors->has('email'))
+                                <span class="text-danger" style="font-size: 14px;">{{ $errors->first('email') }}</span>
+                            @endif
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                            <input class="form-control" type="password" name="password"
+                                placeholder="{{ __('Password') }}" required autocomplete="current-password">
+                            @if ($errors->has('password'))
+                                <span class="text-danger"
+                                    style="font-size: 14px;">{{ $errors->first('password') }}</span>
+                            @endif
+
+                            <div class="form-button">
+                                <button id="submit" type="submit" class="ibtn">{{ __('Login') }}</button>
+                                @if (Route::has('password.request'))
+                                @endif
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+    <!-- Template JS -->
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/popper.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+</body>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</html>

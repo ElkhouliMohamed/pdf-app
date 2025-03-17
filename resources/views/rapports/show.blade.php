@@ -58,7 +58,7 @@
                                             $difference =
                                                 $rapport->periode->format('F Y') !==
                                                 $previousMonth->periode->format('F Y')
-                                                    ? 'Données disponibles'
+                                                    ? ''
                                                     : 'Aucune différence';
                                         @endphp
                                         {{ $difference }}
@@ -74,7 +74,7 @@
                                 <td class="px-6 py-4">{{ $previousMonth->nom_rapport ?? 'Aucune donnée' }}</td>
                                 <td class="px-6 py-4">
                                     @if ($previousMonth)
-                                        {{ $rapport->nom_rapport === $previousMonth->nom_rapport ? 'Identique' : 'Différent' }}
+                                        {{ $rapport->nom_rapport === $previousMonth->nom_rapport ? 'Identique' : '' }}
                                     @else
                                         Aucune comparaison
                                     @endif
@@ -291,7 +291,8 @@
                             @foreach ($top_keywords as $keyword)
                                 <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
                                     <p class="font-medium text-gray-900">{{ $keyword->keyword }}</p>
-                                    <p class="text-sm text-gray-600">Position: {{ $keyword->position ?? 'N/A' }}</p>
+                                    <p class="text-sm text-gray-600">Nombre Requetes:
+                                        {{ $keyword->nombre_requetes ?? 'N/A' }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -305,24 +306,77 @@
                             @foreach ($top_session_pages as $page)
                                 <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
                                     <p class="font-medium text-gray-900">{{ $page->url_page }}</p>
-                                    <p class="text-sm text-gray-600">Sessions: {{ number_format($page->sessions ?? 0) }}
+                                    <p class="text-sm text-gray-600">Duree Moyenne:
+                                        {{ number_format($page->duree_moyenne ?? 0) }}
                                     </p>
                                 </div>
                             @endforeach
                         </div>
                     </div>
                 @endif
-
-                @if ($projet)
-                    <div>
-                        <h5 class="text-xl font-semibold text-gray-800 mb-4">Informations du Projet</h5>
-                        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
-                            <p class="text-gray-900"><strong>Nom:</strong> {{ $projet->nom_projet }}</p>
-                            <p class="text-gray-900"><strong>Statut:</strong> {{ $projet->status }}</p>
-                            <p class="text-gray-900"><strong>Description:</strong> {{ $projet->description }}</p>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        <!-- Top Pages Section -->
+        <div class="mb-10 mt-4 bg-white p-3 rounded-xl shadow-md">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Top Pages
+            </h2>
+            <div class="bg-white p-6 rounded-xl shadow-md overflow-x-auto">
+                @if ($top_pages->isEmpty())
+                    <p class="text-gray-500 text-center py-4 flex items-center justify-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Aucune Top Page trouvée pour ce projet.
+                    </p>
+                @else
+                    <table class="w-full text-left table-auto">
+                        <thead>
+                            <tr class="bg-gray-200 text-gray-800 uppercase text-sm tracking-wide">
+                                <th class="p-4 font-semibold">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                        </svg>
+                                        URL de la Page
+                                    </div>
+                                </th>
+                                <th class="p-4 font-semibold">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Nombre de Visites
+                                    </div>
+                                </th>
+                                <th class="p-4 font-semibold">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Nom du Rapport
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($top_pages as $topPage)
+                                <tr class="border-b hover:bg-gray-50 transition">
+                                    <td class="p-4">{{ $topPage->url_page }}</td>
+                                    <td class="p-4">{{ number_format($topPage->nombre_visites) }}</td>
+                                    <td class="p-4">
+                                        {{ $topPage->rapport->nom_rapport ?? 'Rapport #' . $topPage->id_rapport }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 @endif
+                
             </div>
         </div>
     </div>

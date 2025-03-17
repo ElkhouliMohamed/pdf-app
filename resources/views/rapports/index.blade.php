@@ -45,7 +45,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="button"
-                                        class="flex items-center text-red-600 hover:text-red-800 transition-colors delete-btn">
+                                        class="flex items-center mt-2 text-red-600 hover:text-red-800 transition-colors delete-btn">
                                         <i class="fas fa-trash-alt mr-1"></i> Supprimer
                                     </button>
                                 </form>

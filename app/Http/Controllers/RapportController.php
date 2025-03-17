@@ -30,7 +30,7 @@ class RapportController extends Controller
 
             $projet = $rapport->projet;
 
-            // Fetch the previous month's data
+            // Fetch the previous month's data (single rapport)
             $previousMonth = Rapport::with(['topKeywords', 'topPages', 'topSessionPages'])
                 ->where('id_projet', $rapport->id_projet)
                 ->whereMonth('periode', Carbon::parse($rapport->periode)->subMonth()->month)
@@ -47,17 +47,28 @@ class RapportController extends Controller
                 ->get()
                 ->map(function ($keyword) use ($previousMonth) {
                     $prevValue = optional($previousMonth?->topKeywords->firstWhere('keyword', $keyword->keyword))->nombre_requetes ?? 0;
-
                     $keyword->previous_requetes = $prevValue;
                     $keyword->evolution = $this->calculatePercentageChange($keyword->nombre_requetes, $prevValue);
-
                     return $keyword;
                 });
 
+            // Fetch top pages and compare with last month's data
+            $topPages = $rapport->topPages()
+                ->orderBy('nombre_visites', 'desc')
+                ->limit(10)
+                ->get()
+                ->map(function ($page) use ($previousMonth) {
+                    $prevValue = optional($previousMonth?->topPages->firstWhere('url_page', $page->url_page))->nombre_visites ?? 0;
+                    $page->previous_visites = $prevValue;
+                    $page->evolution = $this->calculatePercentageChange($page->nombre_visites, $prevValue);
+                    return $page;
+                });
 
-            // Fetch top pages and session pages
-            $topPages = $rapport->topPages()->orderBy('nombre_visites', 'desc')->limit(10)->get();
-            $topSessionPages = $rapport->topSessionPages()->orderBy('duree_moyenne', 'desc')->limit(10)->get();
+            // Fetch top session pages
+            $topSessionPages = $rapport->topSessionPages()
+                ->orderBy('duree_moyenne', 'desc')
+                ->limit(10)
+                ->get();
 
             // Handle project image path
             $imagePath = public_path('storage/images/' . ($projet->image_path ?? 'default.jpg'));
@@ -130,21 +141,24 @@ class RapportController extends Controller
 
     //!   for rapports of a project
     public function viewRapports($projet_id)
-        {
-                // Find the project using the ID
-                $projet = Projet::findOrFail($projet_id);
+    {
+        // Find the project using the ID
+        $projet = Projet::findOrFail($projet_id);
 
-                // Fetch reports related to this project
-                $rapports = Rapport::where('id_projet', $projet_id)->get();
-                // Fetch Top Keywords (if you have a relationship)
-                $top_keywords = TopKeyword::where('id_projet', $projet_id)->get();
+        // Fetch reports related to this project
+        $rapports = Rapport::where('id_projet', $projet_id)->get();
+        // Fetch Top Keywords (if you have a relationship)
+        $top_keywords = TopKeyword::where('id_projet', $projet_id)->get();
 
-                // Fetch Top Session Pages (if you have a relationship)
-                $top_session_pages = TopSessionPage::where('id_projet', $projet_id)->get();
+        // Fetch Top Session Pages (if you have a relationship)
+        $top_session_pages = TopSessionPage::where('id_projet', $projet_id)->get();
 
-                // Return the view with the reports, project details, top keywords, and top session pages
-                return view('projets.rapports', compact('projet', 'rapports', 'top_keywords', 'top_session_pages'));
-        }
+        // Fetch Top Pages (if you have a relationship)
+        $top_pages = TopPage::where('id_projet', $projet_id)->get();
+
+        // Return the view with the reports, project details, top keywords, and top session pages
+        return view('projets.rapports', compact('projet', 'rapports', 'top_keywords', 'top_session_pages , top_pages'));
+    }
 
     //! end 
 
@@ -219,7 +233,7 @@ class RapportController extends Controller
     public function show($id)
     {
         // Fetch current report with related models
-        $rapport = Rapport::with(['projet', 'topKeywords', 'topSessionPages'])
+        $rapport = Rapport::with(['projet', 'topKeywords', 'topSessionPages', 'topPages'])
             ->findOrFail($id);
 
         // Calculate the previous month’s date and fetch the report for that month
@@ -232,13 +246,18 @@ class RapportController extends Controller
         // If no previous month data, set it to an empty object
         $previousMonth = $previousMonth ?? new Rapport();
 
+        // Fetch Top Pages using the project ID (corrected from rapport ID)
+        $top_pages = $rapport->topPages; // Assuming a relationship exists, otherwise use the query below
+        // $top_pages = TopPage::where('id_projet', $rapport->id_projet)->get(); // Fallback if no relationship
+
         // Pass data to the view
         return view('rapports.show', [
             'rapport' => $rapport,
             'previousMonth' => $previousMonth,
             'projet' => $rapport->projet,
             'top_keywords' => $rapport->topKeywords,
-            'top_session_pages' => $rapport->topSessionPages
+            'top_session_pages' => $rapport->topSessionPages,
+            'top_pages' => $top_pages
         ]);
     }
 

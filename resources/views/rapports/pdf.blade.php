@@ -133,12 +133,10 @@
         <div class="header-container">
             <div class="logo">
                 @php
-                    $imagePath = public_path('storage/images/' . $projet->image_path);
+                    $imagePath = public_path('storage/images/' . ($projet->image_path ?? 'default.png'));
                     $defaultPath = public_path('storage/images/default.png');
                     $finalImagePath = file_exists($imagePath) ? $imagePath : $defaultPath;
                 @endphp
-                <img src="{{ $finalImagePath }}" alt="Logo du projet"
-                    style="max-width: 100px; height: auto; vertical-align: middle;">
                 <h1>{{ $projet->nom_projet ?? 'Projet sans nom' }}</h1>
                 <p>
                     <a href="{{ $projet->nom_siteweb ?? '#' }}">
@@ -179,7 +177,7 @@
                     <th>{{ $label }}</th>
                     <td>{{ number_format($rapport->$field ?? 0, 2) }}{{ $unit }}</td>
                     <td>
-                        @if ($previousMonth)
+                        @if ($previousMonth && $previousMonth->$field !== null)
                             {{ number_format($previousMonth->$field ?? 0, 2) }}{{ $unit }}
                         @else
                             N/A
@@ -210,6 +208,7 @@
         </tbody>
     </table>
 
+    <!-- Top Keywords Section -->
     <h2>Top 10 Mots-Clés</h2>
     <table>
         <thead>
@@ -217,7 +216,7 @@
                 <th>Mot-Clé</th>
                 <th>Requêtes</th>
                 <th>Requêtes Mois Dernier</th>
-                <th>État</th>
+                <th><span class="metric-comparison">Différence (%)</span></th>
             </tr>
         </thead>
         <tbody>
@@ -225,31 +224,18 @@
                 <tr>
                     <td>{{ $keyword->keyword ?? 'N/A' }}</td>
                     <td>{{ number_format($keyword->nombre_requetes ?? 0) }}</td>
-                    <td>
-                        @if ($previousMonth && $previousMonth->topKeywords->contains('keyword', $keyword->keyword))
-                            {{ number_format($previousMonth->topKeywords->firstWhere('keyword', $keyword->keyword)->nombre_requetes ?? 0) }}
-                        @else
-                            N/A
-                        @endif
-                    </td>
+                    <td>{{ number_format($keyword->previous_requetes ?? 0) }}</td>
                     <td class="metric-comparison">
-                        @if ($previousMonth && $previousMonth->topKeywords->contains('keyword', $keyword->keyword))
-                            @php
-                                $prevValue =
-                                    $previousMonth->topKeywords->firstWhere('keyword', $keyword->keyword)
-                                        ->nombre_requetes ?? 0;
-                                $change = $prevValue
-                                    ? (($keyword->nombre_requetes - $prevValue) / $prevValue) * 100
-                                    : ($keyword->nombre_requetes > 0
-                                        ? 100
-                                        : 0);
-                            @endphp
-                            {{ number_format($change, 2) }}%
-                            @if ($change > 0)
-                                <span class="positive">(+)</span>
-                            @elseif ($change < 0)
-                                <span class="negative">(-)</span>
-                            @endif
+                        @if ($keyword->previous_requetes !== null)
+                            <span
+                                class="{{ $keyword->evolution > 0 ? 'positive' : ($keyword->evolution < 0 ? 'negative' : 'neutral') }}">
+                                {{ number_format($keyword->evolution, 2) }}%
+                                @if ($keyword->evolution > 0)
+                                    (+)
+                                @elseif ($keyword->evolution < 0)
+                                    (-)
+                                @endif
+                            </span>
                         @else
                             N/A
                         @endif
@@ -257,52 +243,40 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4">Aucun mot-clé disponible</td>
+                    <td colspan="4" class="empty">Aucun mot-clé disponible</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 
+    <!-- Top Pages Section -->
     <h2>Top 10 Pages</h2>
     <table>
         <thead>
             <tr>
-                <th>Page</th>
-                <th>Visites</th>
+                <th>URL de la Page</th>
+                <th>Nombre de Visites</th>
                 <th>Visites Mois Dernier</th>
-                <th>État</th>
+                <th><span class="metric-comparison">Différence (%)</span></th>
             </tr>
         </thead>
         <tbody>
             @forelse($topPages as $page)
                 <tr>
-                    <td>{{ $page->page_url ?? 'N/A' }}</td>
+                    <td>{{ $page->url_page ?? 'N/A' }}</td>
                     <td>{{ number_format($page->nombre_visites ?? 0) }}</td>
-                    <td>
-                        @if ($previousMonth && $previousMonth->topPages->contains('page_url', $page->page_url))
-                            {{ number_format($previousMonth->topPages->firstWhere('page_url', $page->page_url)->nombre_visites ?? 0) }}
-                        @else
-                            N/A
-                        @endif
-                    </td>
+                    <td>{{ number_format($page->previous_visites ?? 0) }}</td>
                     <td class="metric-comparison">
-                        @if ($previousMonth && $previousMonth->topPages->contains('page_url', $page->page_url))
-                            @php
-                                $prevValue =
-                                    $previousMonth->topPages->firstWhere('page_url', $page->page_url)->nombre_visites ??
-                                    0;
-                                $change = $prevValue
-                                    ? (($page->nombre_visites - $prevValue) / $prevValue) * 100
-                                    : ($page->nombre_visites > 0
-                                        ? 100
-                                        : 0);
-                            @endphp
-                            {{ number_format($change, 2) }}%
-                            @if ($change > 0)
-                                <span class="positive">(+)</span>
-                            @elseif ($change < 0)
-                                <span class="negative">(-)</span>
-                            @endif
+                        @if ($page->previous_visites !== null)
+                            <span
+                                class="{{ $page->evolution > 0 ? 'positive' : ($page->evolution < 0 ? 'negative' : 'neutral') }}">
+                                {{ number_format($page->evolution, 2) }}%
+                                @if ($page->evolution > 0)
+                                    (+)
+                                @elseif ($page->evolution < 0)
+                                    (-)
+                                @endif
+                            </span>
                         @else
                             N/A
                         @endif
@@ -310,12 +284,13 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4">Aucune page disponible</td>
+                    <td colspan="4" class="empty">Aucune Top Page disponible</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 
+    <!-- Top Session Pages Section -->
     <h2>Top 10 Pages de Session</h2>
     <table>
         <thead>
@@ -323,26 +298,26 @@
                 <th>Page</th>
                 <th>Durée Moyenne</th>
                 <th>Durée Moyenne Mois Dernier</th>
-                <th>État</th>
+                <th><span class="metric-comparison">Différence (%)</span></th>
             </tr>
         </thead>
         <tbody>
             @forelse($topSessionPages as $sessionPage)
                 <tr>
-                    <td>{{ $sessionPage->page_url ?? 'N/A' }}</td>
+                    <td>{{ $sessionPage->url_page ?? 'N/A' }}</td>
                     <td>{{ number_format($sessionPage->duree_moyenne ?? 0, 2) }}s</td>
                     <td>
-                        @if ($previousMonth && $previousMonth->topSessionPages->contains('page_url', $sessionPage->page_url))
-                            {{ number_format($previousMonth->topSessionPages->firstWhere('page_url', $sessionPage->page_url)->duree_moyenne ?? 0, 2) }}s
+                        @if ($previousMonth && $previousMonth->topSessionPages->contains('url_page', $sessionPage->url_page))
+                            {{ number_format($previousMonth->topSessionPages->firstWhere('url_page', $sessionPage->url_page)->duree_moyenne ?? 0, 2) }}s
                         @else
                             N/A
                         @endif
                     </td>
                     <td class="metric-comparison">
-                        @if ($previousMonth && $previousMonth->topSessionPages->contains('page_url', $sessionPage->page_url))
+                        @if ($previousMonth && $previousMonth->topSessionPages->contains('url_page', $sessionPage->url_page))
                             @php
                                 $prevValue =
-                                    $previousMonth->topSessionPages->firstWhere('page_url', $sessionPage->page_url)
+                                    $previousMonth->topSessionPages->firstWhere('url_page', $sessionPage->url_page)
                                         ->duree_moyenne ?? 0;
                                 $change = $prevValue
                                     ? (($sessionPage->duree_moyenne - $prevValue) / $prevValue) * 100
@@ -363,40 +338,11 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4">Aucune page de session disponible</td>
+                    <td colspan="4" class="empty">Aucune page de session disponible</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
-    <h2>Top 10 Mots-Clés</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Mot-Clé</th>
-                <th>Requêtes</th>
-                <th>Requêtes Mois Dernier</th>
-                <th>Évolution</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($topKeywords as $keyword)
-                <tr>
-                    <td>{{ $keyword->keyword ?? 'N/A' }}</td>
-                    <td>{{ number_format($keyword->nombre_requetes ?? 0) }}</td>
-                    <td>{{ number_format($keyword->previous_requetes ?? 0) }}</td>
-                    <td class="metric-comparison">
-                        {{ number_format($keyword->evolution, 2) }}%
-                        @if ($keyword->evolution > 0)
-                            <span class="positive">(+)</span>
-                        @elseif ($keyword->evolution < 0)
-                            <span class="negative">(-)</span>
-                        @endif
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
 
     <!-- Complementary Data Section -->
     <h2>Données Complémentaires</h2>
@@ -418,7 +364,7 @@
         <div class="grid">
             @foreach ($topPages as $page)
                 <div class="grid-item">
-                    <div>{{ $page->page_url ?? 'N/A' }}</div>
+                    <div>{{ $page->url_page ?? 'N/A' }}</div>
                     <div>{{ number_format($page->nombre_visites ?? 0) }}</div>
                 </div>
             @endforeach
@@ -430,7 +376,7 @@
         <div class="grid">
             @foreach ($topSessionPages as $sessionPage)
                 <div class="grid-item">
-                    <div>{{ $sessionPage->page_url ?? 'N/A' }}</div>
+                    <div>{{ $sessionPage->url_page ?? 'N/A' }}</div>
                     <div>{{ number_format($sessionPage->duree_moyenne ?? 0, 2) }}s</div>
                 </div>
             @endforeach
@@ -445,8 +391,8 @@
                 <div>{{ $projet->nom_projet ?? 'N/A' }}</div>
             </div>
             <div class="grid-item">
-                <div>Description</div>
-                <div>{{ $projet->description ?? 'Aucune description' }}</div>
+                <div>Objectif</div>
+                <div>{{ $projet->objectif ?? 'Aucun objectif' }}</div>
             </div>
         </div>
     @endif

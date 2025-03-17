@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rapport;
 use App\Models\TopPage;
 use Illuminate\Http\Request;
 
@@ -10,14 +11,16 @@ class TopPageController extends Controller
     // Display a listing of the resource
     public function index()
     {
-        $topPages = TopPage::all();  // Retrieve all top pages
-        return view('top_pages.index', compact('topPages'));  // Return a view with the top pages
+        $topPages = TopPage::all();
+        $rapports = Rapport::all(); // Retrieve all top pages
+        return view('top_pages.index', compact('topPages' , 'rapports'));  // Return a view with the top pages
     }
 
     // Show the form for creating a new resource
     public function create()
     {
-        return view('top_pages.create');  // Return view for creating a new top page
+        $rapports = Rapport::all(); // Fetch all rapports
+        return view('top_pages.create', compact('rapports')); // Pass rapports to the view
     }
 
     // Store a newly created resource in storage
@@ -25,16 +28,12 @@ class TopPageController extends Controller
     {
         $validated = $request->validate([
             'url_page' => 'required|string|max:255',
-            'nb_clicks' => 'required|integer',
-            'nb_impressions' => 'required|integer',
-            'avg_ctr' => 'required|numeric',
-            'avg_position' => 'required|numeric',
+            'nombre_visites' => 'required|integer',
             'id_rapport' => 'required|exists:rapports,id_rapport',
         ]);
 
-        TopPage::create($validated);  // Create a new top page record
-
-        return redirect()->route('topPages.index');  // Redirect back to the index page
+        TopPage::create($validated);
+        return redirect()->route('topPages.index');
     }
 
     // Display the specified resource
@@ -47,8 +46,9 @@ class TopPageController extends Controller
     // Show the form for editing the specified resource
     public function edit($id)
     {
-        $topPage = TopPage::findOrFail($id);  // Find the top page by its ID
-        return view('top_pages.edit', compact('topPage'));  // Return view for editing the top page
+        $topPage = TopPage::findOrFail($id);
+        $rapports = Rapport::all(); // Fetch all rapports
+        return view('top_pages.edit', compact('topPage', 'rapports')); // Pass rapports to the view
     }
 
     // Update the specified resource in storage
@@ -56,25 +56,20 @@ class TopPageController extends Controller
     {
         $validated = $request->validate([
             'url_page' => 'required|string|max:255',
-            'nb_clicks' => 'required|integer',
-            'nb_impressions' => 'required|integer',
-            'avg_ctr' => 'required|numeric',
-            'avg_position' => 'required|numeric',
+            'nombre_visites' => 'required|integer',
             'id_rapport' => 'required|exists:rapports,id_rapport',
         ]);
 
-        $topPage = TopPage::findOrFail($id);  // Find the top page
-        $topPage->update($validated);  // Update the top page with the validated data
-
-        return redirect()->route('topPages.index');  // Redirect back to the index page
+        $topPage = TopPage::findOrFail($id);
+        $topPage->update($validated);
+        return redirect()->route('topPages.index');
     }
 
     // Remove the specified resource from storage
     public function destroy($id)
     {
-        $topPage = TopPage::findOrFail($id);  // Find the top page by its ID
-        $topPage->delete();  // Delete the top page
-
-        return redirect()->route('topPages.index');  // Redirect back to the index page
+        $topPage = TopPage::findOrFail($id);
+        $topPage->delete();
+        return redirect()->route('topPages.index');
     }
 }

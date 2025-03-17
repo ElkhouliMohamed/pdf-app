@@ -1,52 +1,78 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ __('Register') }}</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/iofrm-style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/iofrm-theme6.css') }}">
+</head>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
+<body>
+    <div class="form-body">
+        <div class="website-logo">
+            <a href="{{ route('index') }}">
+                <div class="logo">
+                    <img class="logo-size" src="{{ asset('images/logo-light.jpg') }}" alt="">
+                </div>
             </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
         </div>
-    </form>
-</x-guest-layout>
+        <div class="iofrm-layout">
+            <div class="img-holder">
+                <div class="bg"></div>
+                <div class="info-holder">
+                    <img src="{{ asset('images/graphic2.svg') }}" alt="">
+                </div>
+            </div>
+            <div class="form-holder">
+                <div class="form-content">
+                    <div class="form-items">
+                        <h3>Get more things done with Loggin platform.</h3>
+                        <p>Access to the most powerfull tool in the entire design and web industry.</p>
+                        <div class="page-links">
+                            <a href="{{ route('login') }}">Login</a>
+                            <a href="{{ route('register') }}" class="active">Register</a>
+                        </div>
+                        <!-- Registration Form -->
+                        <form method="POST" action="{{ route('register') }}">
+                            @csrf
+                            <input class="form-control" type="text" name="name" placeholder="Full Name"
+                                value="{{ old('name') }}" required>
+                            @if ($errors->has('name'))
+                                <span>{{ $errors->first('name') }}</span>
+                            @endif
+                            <input class="form-control" type="email" name="email" placeholder="E-mail Address"
+                                value="{{ old('email') }}" required>
+                            @if ($errors->has('email'))
+                                <span>{{ $errors->first('email') }}</span>
+                            @endif
+                            <input class="form-control" type="password" name="password" placeholder="Password" required>
+                            @if ($errors->has('password'))
+                                <span>{{ $errors->first('password') }}</span>
+                            @endif
+                            <input class="form-control" type="password" name="password_confirmation"
+                                placeholder="Confirm Password" required>
+                            @if ($errors->has('password_confirmation'))
+                                <span>{{ $errors->first('password_confirmation') }}</span>
+                            @endif
+                            <div class="form-button">
+                                <button id="submit" type="submit" class="ibtn">Register</button>
+                            </div>
+                        </form>
+                     
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/popper.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+</body>
+
+</html>

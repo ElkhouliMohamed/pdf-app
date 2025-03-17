@@ -2,64 +2,87 @@
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 @section('content')
-    <div class="max-w-7xl mx-auto p-6 mt-10">
-        <h1 class="text-4xl font-bold text-gray-900 mb-8">Détails du Rapport</h1>
+    <div class="max-w-7xl mx-auto p-6 mt-10 font-sans">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-10 tracking-tight">Détails du Rapport</h1>
 
         <!-- Report Details -->
-        <div class="bg-gray-50 p-6 rounded-xl shadow-md mb-8">
-            <h3 class="text-2xl font-semibold text-gray-800 mb-3">Rapport pour : {{ $rapport->projet->name }}</h3>
-            <p class="text-lg text-gray-700"><strong>Période :</strong> {{ $rapport->periode->format('F Y') }}</p>
+        <div
+            class="bg-white p-6 rounded-xl shadow-lg mb-8 border-l-4 border-blue-500 transform hover:scale-[1.01] transition duration-200">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                <span class="mr-2">📌</span> Rapport pour : {{ $rapport->projet->nom_projet }}
+            </h3>
+            <p class="text-lg text-gray-600 mb-2"><strong class="text-gray-800">📅 Période :</strong>
+                {{ $rapport->periode->format('F Y') }}</p>
+            <p class="text-lg text-gray-600"><strong class="text-gray-800">📂 Nom De Rapport :</strong>
+                {{ $rapport->nom_rapport }}</p>
         </div>
 
-        <!-- Metrics Overview -->
-        <h3 class="text-2xl font-semibold text-gray-800 mb-6">Aperçu des Métriques</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-            @foreach ($metrics as $metric => $data)
-                <div
-                    class="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:-translate-y-1">
-                    <h5 class="text-lg font-medium text-gray-900">{{ ucfirst(str_replace('_', ' ', $metric)) }}</h5>
-                    <p class="mt-2 text-gray-700"><strong>Actuel :</strong> <span
-                            class="text-blue-600">{{ $data['current'] }}</span></p>
-                    <p class="text-gray-700"><strong>Précédent :</strong> <span
-                            class="text-gray-500">{{ $data['previous'] }}</span></p>
-                </div>
+        <!-- Top Keywords Section -->
+        <h3 class="text-2xl font-semibold text-gray-800 mb-6 ml-2 flex items-center">
+            <span class="mr-2">🔍</span> Mots-Clés Principaux
+        </h3>
+        <ul class="space-y-4 mr-5 ml-5">
+            @foreach ($topKeywords as $keyword)
+                <li
+                    class="bg-blue-50 p-4 rounded-lg shadow-sm flex justify-between items-center hover:bg-blue-100 transition duration-200">
+                    <span class="text-gray-900 font-medium text-lg">#{{ $keyword->keyword }}</span>
+                    <span
+                        class="bg-blue-600 text-white text-sm font-semibold py-1 px-4 rounded-full">{{ $keyword->nombre_requetes }}
+                        requêtes</span>
+                </li>
             @endforeach
+        </ul>
+
+        <!-- Metrics Overview -->
+        <div class="container mx-auto p-6">
+            <h3 class="text-3xl font-bold text-gray-900 mb-10 text-center flex justify-center items-center">
+                <span class="mr-2">📊</span> Aperçu des Métriques
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+                @foreach ($metrics as $metric => $data)
+                    <div
+                        class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition duration-300 text-white">
+                        <h5 class="text-xl font-semibold flex items-center">
+                            <span class="mr-2">📌</span> {{ ucfirst(str_replace('_', ' ', $metric)) }}
+                        </h5>
+                        <p class="mt-4 text-lg"><strong class="font-medium">📈 Actuel :</strong> <span
+                                class="font-bold text-yellow-200">{{ $data['current'] }}</span></p>
+                        <p class="text-lg"><strong class="font-medium">📉 Précédent :</strong> <span
+                                class="font-bold text-gray-100">{{ $data['previous'] }}</span></p>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Chart for Metrics -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h4 class="text-xl font-semibold text-gray-800 mb-4 text-center">📈 Graphique des Métriques</h4>
+                <canvas id="metricsChart" class="w-full h-80"></canvas>
+            </div>
         </div>
 
         <!-- Charts Section -->
-        <h3 class="text-2xl font-semibold text-gray-800 mb-6">Graphiques de Performance</h3>
+        <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+            <span class="mr-2">📊</span> Graphiques de Performance
+        </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <!-- Chart for Total Clicks -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
+            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-200">
                 <h4 class="text-xl font-semibold text-gray-800 mb-4">Clics Totaux</h4>
                 <canvas id="clicksChart" height="200"></canvas>
             </div>
 
             <!-- Chart for Total Impressions -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
+            <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-200">
                 <h4 class="text-xl font-semibold text-gray-800 mb-4">Impressions Totales</h4>
                 <canvas id="impressionsChart" height="200"></canvas>
             </div>
 
             <!-- Chart for Average CTR -->
-            <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2">
+            <div class="bg-white p-6 rounded-xl shadow-md md:col-span-2 hover:shadow-lg transition duration-200">
                 <h4 class="text-xl font-semibold text-gray-800 mb-4">CTR Moyen (%)</h4>
                 <canvas id="ctrChart" height="200"></canvas>
             </div>
         </div>
-
-        <!-- Top Keywords Section -->
-        <h3 class="text-2xl font-semibold text-gray-800 mb-6">Mots-Clés Principaux</h3>
-        <ul class="space-y-3">
-            @foreach ($topKeywords as $keyword)
-                <li class="bg-gray-50 p-4 rounded-lg shadow-sm flex justify-between items-center">
-                    <span class="text-gray-900 font-medium">{{ $keyword->keyword }}</span>
-                    <span
-                        class="bg-blue-600 text-white text-sm font-semibold py-1 px-3 rounded-full">{{ $keyword->nombre_requetes }}
-                        requêtes</span>
-                </li>
-            @endforeach
-        </ul>
     </div>
 
     <!-- Chart.js CDN -->
@@ -167,6 +190,51 @@
                     }
                 }
             }
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('metricsChart').getContext('2d');
+            const labels = @json(array_keys($metrics));
+            const currentValues = @json(array_column($metrics, 'current'));
+            const previousValues = @json(array_column($metrics, 'previous'));
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Actuel',
+                        data: currentValues,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Précédent',
+                        data: previousValues,
+                        backgroundColor: 'rgba(201, 203, 207, 0.7)',
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Comparaison des Métriques'
+                        }
+                    }
+                }
+            });
         });
     </script>
 @endsection
